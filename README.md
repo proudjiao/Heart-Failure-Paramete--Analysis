@@ -4,7 +4,7 @@
 
 Heart Disease is the leading cause of death within the US, with one person dying every 34 seconds due to a heart related issue. Up to 90% of these deaths are preventable, but a mere 8% of Americans recognize this (CDC). We wanted to take the initiative and find out the leading symptoms that indicate heart disease.
 
-The main question we wanted to answer is what are significant indicators that could pre- dict heart failures. The methods we used include Exploratory Data Analysis (EDA) to find patterns and especially correlations between predictors and heart failure and ANOVA to de- termine statistical evidence for correlation. The results indicate that common indicators such as Age, Sex, Resting Blood Pressure, Fasting Blood Sugar Level, and Max Heart Rate, all have significant correlations with heart disease.
+The main question we wanted to answer is what are significant indicators that could predict heart failures. The methods we used include Exploratory Data Analysis (EDA) to find patterns and especially correlations between predictors and heart failure and ANOVA to de- termine statistical evidence for correlation. The results indicate that common indicators such as Age, Sex, Resting Blood Pressure, Fasting Blood Sugar Level, and Max Heart Rate, all have significant correlations with heart disease.
 
 ## Key Findings
 
@@ -18,6 +18,6 @@ The main question we wanted to answer is what are significant indicators that co
 ## More 
 
 
-[View R code](RCode_CarAccidents.Rmd)
+[View Report](HeartFailtureAnalysisReport.pdf)
 
-[View Report](SeverityofCarAccident.pdf)
+[View Poster](HeartFailtureAnalysisPoster.pdf)
