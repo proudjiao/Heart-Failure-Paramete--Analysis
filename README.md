@@ -18,3 +18,6 @@ The main question we wanted to answer is what are significant indicators that co
 ## More 
 
 
+[View R code](RCode_CarAccidents.Rmd)
+
+[View Report](SeverityofCarAccident.pdf)
