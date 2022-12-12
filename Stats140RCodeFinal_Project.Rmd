@@ -1,0 +1,149 @@
+---
+title: "Stats140XP_Final Project"
+author: "Group 2"
+date: "11/22/2022"
+output: pdf_document
+---
+
+# Deciding what we want to look at
+
+We want to find out good risk factors of heart disease. Since we are not experts in medical terms, we 
+
+# EDA
+
+```{r}
+heart <- read.csv(file = 'heart.csv', stringsAsFactors = T)
+library(ggcorrplot)
+heart$Sex <- as.numeric(heart$Sex)
+heart$HeartDisease <- as.numeric(heart$HeartDisease)
+index_to_investigate <- c("Age", "Sex", "RestingBP", "FastingBS", "MaxHR", "HeartDisease", "Cholesterol")
+heart.investigated<- heart[index_to_investigate]
+head(heart.investigated)
+
+```
+
+```{r}
+corr <- cor(heart[,index_to_investigate])
+p.mat <- cor_pmat(heart[,index_to_investigate])
+ggcorrplot(corr,
+           hc.order = TRUE,
+           type = "lower",
+           p.mat = p.mat)
+```
+
+From the correlation matrix, we mainly focus on corelations between variables and Heart Disease. we can see that max Heart Rate and Cholesterol have a  negative correlation with Heart disease, while sex, age, Fasting Blood Sugar level, and resting blood pressure has positive correlation with Heart Disease.
+
+We can also look at the correlation between the interaction terms. However, they are not the main concern of this study.
+
+We then look at the distribution for each variable to observe patterns and abnormalties.
+
+# Visualizing HeartDisease and a continuous variable.
+```{r}
+heart <- read.csv(file = 'heart.csv', stringsAsFactors = T)
+heart$HeartDisease <- as.character(heart$HeartDisease)
+
+# Between the ages of 55 and 65 is the high incidence period of Heart Failure.
+ggplot(data = heart, mapping = aes(x = Age)) + geom_freqpoly(mapping = aes(colour = HeartDisease), binwidth = 1)
+above_50 <- heart$Age >= 50
+cat("People above 60 is ", (mean(as.integer(heart$HeartDisease[above_50]))/mean(as.integer(heart$HeartDisease[!above_50]))-1)*100, "% more likely to get heart disease", sep = "")
+
+
+# RestingBP is not a significant factor to influence Heart Failure.
+ggplot(data = heart, mapping = aes(x = RestingBP)) + geom_freqpoly(mapping = aes(colour = HeartDisease), binwidth = 10)
+BP_above_145 <- heart$RestingBP >= 145
+cat("People with Resting Blood pressure above 145 is ", (mean(as.integer(heart$HeartDisease[BP_above_145]))/mean(as.integer(heart$HeartDisease[!BP_above_145]))-1)*100, "% more likely to get heart disease", sep = "")
+
+# Cholesterol
+ggplot(data = heart, mapping = aes(x = Cholesterol)) + geom_freqpoly(mapping = aes(colour = HeartDisease), binwidth = 10)
+```
+
+Note that there are many 0s recorded for Cholesterol level, which should indicate Non-recorded entries, i.e. NAs. Thus we remove the 0s, and new distribution look like this:
+
+```{r}
+NA.index <- heart$Cholesterol == 0
+heart$Cholesterol[NA.index] <- NA
+ggplot(data = heart, mapping = aes(x = Cholesterol)) + geom_freqpoly(mapping = aes(colour = HeartDisease), binwidth = 10)
+
+cho_above_280 <- heart$Cholesterol >= 280
+cat("People with Cholesterol above 280 are ", (mean(as.integer(heart$HeartDisease[cho_above_280]), na.rm = T)/mean(as.integer(heart$HeartDisease[!cho_above_280]), na.rm = T)-1)*100, "% more likely to get heart disease", sep = "")
+```
+
+
+```{r}
+# Higher MaxHR is associated with higher risks of Heart Failure.
+ggplot(data = heart, mapping = aes(x = MaxHR)) + geom_freqpoly(mapping = aes(colour = HeartDisease), binwidth = 10)
+
+MaxHR_below_150 <- heart$MaxHR <= 150
+cat("People with Max Heart Rate below 150 are ", (mean(as.integer(heart$HeartDisease[MaxHR_below_150]), na.rm = T)/mean(as.integer(heart$HeartDisease[!MaxHR_below_150]), na.rm = T)-1)*100, "% more likely to get heart disease", sep = "")
+```
+
+# Visualizing HeartDisease and a categorical variable.
+```{r}
+library(ggplot2)
+library(tidyverse)
+# The incidence of heart failure is higher in women.
+ggplot(data = heart) +
+  geom_count(mapping = aes(x = Sex, y = HeartDisease, colour = Sex))
+
+# The incidence of heart failure is higher in FastingBS > 120 mg/dl.
+heart$FastingBS <- ifelse(heart$FastingBS == 1, ">120 mg/dl", "<120 mg/dl")
+ggplot(data = heart) +
+  geom_count(mapping = aes(x = FastingBS, y = HeartDisease, colour = FastingBS))
+
+FastingBS_above_120 <- heart$FastingBS == ">120 mg/dl"
+cat("People with Max Heart Rate below 150 are ", (mean(as.integer(heart$HeartDisease[FastingBS_above_120]), na.rm = T)/mean(as.integer(heart$HeartDisease[!FastingBS_above_120]), na.rm = T)-1)*100, "% more likely to get heart disease", sep = "")
+```
+
+
+# ANOVA
+
+use ANOVA to check whether patterns we observed are are significant.
+
+```{r}
+anova1 <- aov(HeartDisease~.,heart[,index_to_investigate])
+summary(anova1)
+anova2 <- aov(HeartDisease~FastingBS,heart[,index_to_investigate])
+summary(anova2)
+anova2 <- aov(HeartDisease~Sex,heart[,index_to_investigate])
+summary(anova2)
+anova2 <- aov(HeartDisease~Age,heart[,index_to_investigate])
+summary(anova2)
+anova2 <- aov(HeartDisease~Cholesterol,heart[,index_to_investigate])
+summary(anova2)
+anova2 <- aov(HeartDisease~MaxHR,heart[,index_to_investigate])
+summary(anova2)
+anova2 <- aov(HeartDisease~RestingBP,heart[,index_to_investigate])
+summary(anova2)
+```
+
+We conclude that the only insignificant indicator is Fasting Blood Sugar Level.
+
+
+# Bonus: Graphs used on poster
+
+```{r}
+heart <- read.csv(file = 'heart.csv', stringsAsFactors = T)
+library(tidyverse)
+#install.packages("ggalluvial")
+library(ggalluvial)
+
+ heart %>% group_by(RestingECG,ST_Slope,HeartDisease) %>% tally() %>% mutate(prop = n/sum(n)) %>% ggplot(.)+
+    geom_col(aes(RestingECG, prop, fill = HeartDisease)) +
+    facet_wrap(~ST_Slope)
+
+heart %>% group_by(RestingECG,ST_Slope,HeartDisease) %>% tally() %>% mutate(prop = n/sum(n)) %>% ggplot(.)+
+    geom_col(aes(RestingECG, prop, fill = HeartDisease)) +
+    facet_wrap(~ST_Slope)
+
+ggplot(data = heart,
+       aes(axis1 = Sex, axis2 = ChestPainType, axis3 = RestingECG,axis4 = ExerciseAngina,axis5=ST_Slope,
+           y = MaxHR)) +
+  scale_x_discrete(limits = c("Sex", "ChestPainType", "RestingECG","ExerciseAngina","ST_Slope")) +
+  xlab("categorical varibales") +
+  geom_alluvium(aes(fill = HeartDisease)) +
+  geom_stratum() +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  theme_minimal() +
+  ggtitle("") + coord_flip()
+```
+
