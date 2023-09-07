@@ -1,4 +1,4 @@
-# Heart-Failure-Paramete--Analysis
+# Heart Failure Parameter Analysis
 
 ## Abstract
 
@@ -18,6 +18,6 @@ The main question we wanted to answer is what are significant indicators that co
 ## More 
 
 
-[View Report](HeartFailtureAnalysisReport.pdf)
+[View Report](https://github.com/proudjiao/Heart-Failure-Parameter-Analysis/blob/main/HeartFailtureAnalysisReport.pdf)
 
-[View Poster](HeartFailtureAnalysisPoster.pdf)
+[View Poster](https://github.com/proudjiao/Heart-Failure-Parameter-Analysis/blob/main/HeartFailtureAnalysisPoster.pdf)
